@@ -1,0 +1,22 @@
+(This document is best viewed with "Word Wrap" turned off.)
+
+Thank you for purchasing TexturePaint for Unity3d and supporting Indie development.
+TexturePaint 1.9
+Created by: Phillip Heckinger, 2013.
+This version has been tested in Unity 4.0 and later (Shader Model 3.0 or higher), previous versions iOS verified, but not activly tested or intentionally supported.  Previous versions tested in Unity 3.5.
+To contact me for support or to report a bug, please send a message to user name "Pheck" on forum.unity3d.com
+
+============================
+
+*** TexturePaint C# Info ***
+
+============================
+
+- To use the C# TexturePaint files, move the TexturePaintC#Files.unitypackage file out of the TexturePaint folder.  Then delete the TexturePaint folder and open your project in Unity.
+- Once you have removed TexturePaint and opened your project, find the package file and double click it in the Unity Editor to import all of the C# files.  Once the C# files have been imported, you can use TexturePaint normally once again.
+- TexturePaint C# does not work with the JS Example maps, a C# sample map is provided, but more examples are available in the JS files.
+- When switching to use the C# files, any existing objects in levels with references to the JS files will loose their reference to them.  Make sure to reconnect the scripts to objects you want to use TexturePaint.
+
+============================
+
+See TexturePaint_Documentation.txt for additional information.

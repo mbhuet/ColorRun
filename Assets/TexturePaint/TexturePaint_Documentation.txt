@@ -1,0 +1,242 @@
+(This document is best viewed with "Word Wrap" turned off.)
+
+Thank you for purchasing TexturePaint for Unity3d and supporting Indie development.
+TexturePaint 1.9
+Created by: Phillip Heckinger, 2013.
+This version has been tested in Unity 4.0 and later (Shader Model 3.0 or higher), previous versions iOS verified, but not activly tested or intentionally supported.  Previous versions tested in Unity 3.5.
+To contact me for support or to report a bug, please send a message to user name "Pheck" on forum.unity3d.com
+
+http://youtu.be/6eGSpyXi4zA
+http://www.vertexhorizon.com/texturepaint.html
+
+The TexturePaint tool is designed to drop into any experience and be integrated quickly and easily.
+
+TexturePaint is designed to paint on 2D or complex 3D geometry and has features specific to each method.  Although 3D geometry can represent 2D, its best to use the 2D methods
+for 2D assets because of built in performance savings when painting on 2D surfaces vs 3D surfaces.
+2D and 3D assets work best when the UVs are completly layed-out and unique.  No overlapping UVs is best, but overlapping UVs is possible and can sometimes be used
+to your advantage.
+3D object painting only works if the Paint Grid is using a mesh collider.  2D object painting does not use collision and is not limited by this requirement.
+
+TexturePaint works best in Unity Pro using the GPU for performance reasons, but it has been built to work in both Unity Basic (CPU only) or Unity Pro (CPU or GPU).
+
+Although TexturePaint was built to be as flexible and dynamic as possible, some features can only be modified at runtime via functions and not using the Inspector.
+This allows you to change the values of TexturePaint without causing unexpected bugs.  In addition to standard features, there are additional "helper" functions built in.
+Below is a list of every feature, what they do, and how they can be modified.
+
+============================
+
+*** TexturePaint C# Info ***
+
+============================
+
+- To use the C# TexturePaint files, move the TexturePaintC#Files.unitypackage file out of the TexturePaint folder.  Then delete the TexturePaint folder and open your project in Unity.
+- Once you have removed TexturePaint and opened your project, find the package file and double click it in the Unity Editor to import all of the files.  Once the C# files have been imported, you can use TexturePaint normally once again.
+- TexturePaint C# does not work with the JS Example maps, a C# sample map is provided, but more examples are available in the JS files.
+- When switching to use the C# files, any existing objects in levels with references to the JS files will loose their reference to them.  Make sure to reconnect the scripts to objects you want to use TexturePaint.
+
+============================
+
+*** Index ***
+
+============================
+
+- 1 - Revision History
+- 2 - Basic Usage
+- 3 - Performance & Optimization
+- 4 - Influence Actor Properties
+- 5 - Influence Actor Helper Functions
+- 6 - TexturePaint Grid Properties
+- 7 - TexturePaint Grid Helper Functions
+- 8 - Common Questions
+
+============================
+
+*** Revision History ***
+
+============================
+
+1.0:
+
+- Initial Release
+
+1.1:
+
+- Added features to support painting on complex 3D objects or Simple 2D objects (default).
+- Fixed log spew that happened when used in an empty level.
+- Minor performance updates.
+
+1.2:
+
+- iOS relevant changes.
+
+1.3:
+
+- changed rendertexture format from ARGBHalf to ARGB32.
+- changed destroy features to be legacy.  replaced with typical unity destroy features.
+
+1.4 & 1.5 are submission changes and contained no important file changes.
+
+1.6:
+
+- Added c# versions of runtime scripts.  Did not convert Example maps to work with c# scripts.  Test Example maps using JS file versions.
+- Changed texture resolution code to int to allow script interface to work with c# scripts.  This change was made in both the interface scripts and the runtime scripts.
+- Update to the EncodeRG code to provide cleaner position data.  (Fixs a small jitter when moving the brush around.)
+- Found that Unity has a bug in its static batching code that TexturePaint exposes.  Dynamic batching appears to work fine.
+
+1.7
+
+-Made "helper" functions in the C# files "public" so they can properly be accessed outside of the function.
+-Updates to inline script comments
+-Updates to error reporting text to make it more descriptive.
+
+1.8
+
+-Fixed a but in the Connector script to was blocking multiple influenceActors from rendering correctly.
+-Updated 3d actor paint code to be more optimized and have better paint check logic.
+
+1.9
+
+-Fixed an array overflow bug when spawning excess influence actors.
+
+============================
+
+*** Basic Usage ***
+
+============================
+
+- Example levels using TexturePaint are in the TexturePaint\Examples\ folder.
+
+- To use TexturePaint, first create a "TexturePaint Grid" actor from the "GameObject/Create Other" menu.
+
+- If you are using Unity Pro, the default settings on the TexturePaint Grid you created are a good starting point.
+- If you are using Unity Basic, select the TexturePaint Grid you created and change "Use GPU" to false in the TexturePaint Script.
+
+- The second part of the TexturePaint system is the TexturePaint InfluenceActor.
+- Create a TexturePaint InfluenceActor from the "GameObject/Create Other" menu.
+- Like before, turn on/off the GPU features depending on which version of Unity you are using.
+
+- With the default TexturePaint settings, when you play the game, you should see the color white added to the simulation wherever the InfluenceActor is.
+- The Color added to the simulation is determined in the influence actor settings.
+- If the InfluenceActor is far enough away from the simulation, it will not influence the simulation and will have very little performance impact.
+
+- When you press "play" and your level runs, TexturePaint will create a TexturePaint_Connector object automatically.
+- This object helps to manage the Paint Grids and the InfluenceActors and is required for TexurePaint to operate correctly.  Please do not remove this object from the level.
+
+Complex 3D objects:
+
+- Complex 3D objects work similar to the above.  The primary difference is you must apply the TexturePaintScript to your 3D object by using the menu "Component/TexturePaint/Texture Paint Grid".
+- Once the TexturePaintScript has been applied to your object, make sure the "Paint on 3D objects" option is set to true on the script.
+- 3D painting uses the mesh collider of the object to determine where to paint in the UVs, your object must have a mesh collider to use 3D painting.
+
+============================
+
+*** Performance & Optimization ***
+
+============================
+
+- If you have Unity Pro, use the GPU features boolean.  Running TexturePaint on the GPU can be many many times faster than running it on the CPU.  Make sure to turn it on for TexturePaint to enable the GPU features.
+- TexturePaint uses the object's position and size to determine where the Influence Actor should render.  When an Influence Actor moves far enough away from a TexturePaint actor, the Influence Actor will be skipped for rendering.
+- Reducing the resolution of the simulation will reduce the performance impact of the simulation.
+- Although each Influence Actor has very little impact on performance, if there are enough of them, they can impact performance.  Influence Actors are printed into texture buffers that are used in the simulation.  Regardless of the number of Influence Actors, the simulation will cost the same.
+- Texture Influence Actors cost more than procedural Influence Actors.  Even so, it can be cheaper to use a single texture actor instead of many procedural actors.
+
+============================
+
+*** Influence Actor Properties ***
+
+============================
+
+-Inspector Name-				-Hidden Name and Type-				-Update Type-			-Description-
+
+"Show Size Gizmos" 				showGizmos : boolean				Dynamic (editor only)		Turns on/off the display of sphere gizmos that show the world-space size of influence properties.
+"Scale Size by localScale" 			multiplySizeByScale : boolean;			Dynamic				The size of influence properties is multiplied by the localScale of the object if this value is True.  If this value is False, the property size will not change by the localScale of the object and will remain constant to the Size value.
+"Influence Priority" 				actorPriority : int;				Start() & Influence Function	- ChangeActorPriority( int ) - The Influence Priority of an object will offset the order in which Influence objects are rendered.  To force an Influence to render "in front" or "behind" another influence object, change its priority.
+
+(Color)
+"Add Color" 					addColor : boolean;				Dynamic				Turns on/off the color influence properties.
+"Use Texture"	 				useColorMaskTexture : boolean;			Dynamic (Unity Pro only)	Turns on/off the use of a texture as the color input.  This allows for unique shapes and multi-colored images to be used as the input.
+"Color Texture" 				colorMaskTexture : Texture2D;			Dynamic	(Unity Pro only)	The texture used to create dynamic color influence shapes.  The alpha channel of the texture is used as a mask to determine which part of the texture to display.  Make sure the texture import properties are set to clamp to avoid the texture from repeating.
+"Color (Alpha = Strength)" 			colorValue = Color;				Dynamic				The color of the influence object if a texture is not used.  Like the texture, the alpha is used as an alpha blend value.
+"Color Size" 					colorSize : float;				Dynamic				The world-space size of the color influence.  This value can be modified by the multiply by localScale property.
+"Color Falloff" 				colorFalloff : float;				Dynamic				The falloff value changes how soft the edge of the color is.  A low falloff value will make collision very soft, sometimes to the point that collision can appear to disappear.
+
+============================
+
+*** Influence Actor Helper Functions ***
+
+============================
+
+ChangeActorPriority( int )			Sets the InfluenceActor Priority Level and Updates all TexturePaint Grids with the new value.
+
+DestroyFluidInfluenceActor()			(Legacy feature, use unity "Destroy()" feature.) Actors can be destroyed in any method supported by Unity.  This function destroys the InfluenceActor and cleans up the InfluenceActor Arrays with less performance impact than just using Destroy().
+
+============================
+
+*** TexturePaint Grid Properties ***
+
+============================
+
+-Inspector Name-				-Hidden Name and Type-				-Update Type-			-Description-
+
+"Use GPU"					useUnityProMethod : boolean			Start()	(Unity Pro only)	Pro Method renders the simulation using the GPU and is much faster.  If Pro Method is off, the simulation will render on the CPU and is much slower.
+"Paint on 3D objects"				use3DPaint : boolean				Dynamic				Turns on/off how TexturePaint will apply paint brushes.  3D will trace to the mesh collider and find the UV location to paint at.  2D will use the paint brush position relative to the paint grid to find the UV location to paint at.
+"UV Scale Bias"					uvScaleBias : float				Dynamic				Scales the size of all brushes painting to this Grid.  Brushes will match size across objects using multiple built in features, but unique UV setups can cause the brushes to paint smaller or larger.  Use this variable to make a specific object paint brushes larger or smaller.
+
+"Sync Color to Update()"			syncWithUpdate : boolean			Start() & Grid Function		Overrides the Color FPS so that it updates each frame Unity updates the script.  Typicaly this happens every frame.
+"Color Update FPS"				colorUpdateFPS : float				Start() & Grid Function		- SetColorUpdateFPS( float ) - Color Update FPS controls how many times per second the color actors are painted into the texture buffer.  This value is set on Start() and can be changed with SetColorUpdateFPS(float) on the TexturePaint script.
+
+"Color Strength"				colorStrength : float				Dynamic & Grid Function		- ChangeColorStrength(float) - Sim Strength is a strength multiplier globally applied to the Color painting applied during simulation updates.  Color Strength is set on Start() and can be changed at runtime with ChangeColorStrength(float) on the TexturePaint script.
+"Color Resolution"				resolution : enum				Start()				Resolution of the color texture buffer.
+"Use My Material"				useMyMaterial : boolean				Start()				The output texture will be set in the material on the simulation surface instead of the Material Target.
+"Material Target"				materialTarget : Material			Start()				The output texture will be set in the Material Target.  This can be useful when you want to display the simulation output on an object other than the simulation surface..
+"Material Texture Slot"				materialTextureSlot : string			Start()				The name of the texture slot in the material you want to apply the output texture to.
+
+"Use Color Dissipation"				useColorDissipation : boolean			Start() & Grid Function		- ChangeColorDissipationBool( boolean ) - If Use Color Dissipation is set to false, the simulation will not use any color dissipation.  Color Dissipation is set on Start() and can be changed at runtime with ChangeColorDissipationBool(boolean) on the TexturePaint script.
+"Color Dissipation Mask"			useColorDissipationTexture : boolean		Start()	(Unity Pro only)	Toggles on/off the use of a color dissipation texture.
+"Color Dissp. Texture"				colorDissipationTextureSource : Texture2D	Start()	(Unity Pro only)	The texture to be used with color dissipation.  Black is zero dissipation, White is full dissipation.  Color can be used for unique dissipation FX.
+"Color Dissipation Rate"			colorDissipation : float			Start() & Grid Function		- ChangeColorDissipationStrength( float ) - Color Dissipation Rate is set on Start() and can be changed at runtime with ChangeColorDissipationStrength(float).  Dissipation happens very fast and in most situations should be a very small number.
+"Dissipate To Color"				colorDissipateTo : Color			Start() & Grid Function		- ChangeColorDissipateTo( Color ) - The color that the fluid buffer will dissipate to when color dissipation is enabled.
+"Use Start Color Texture"			useStartColorTexture : boolean			Start()				Toggles on/off the texture being used as the starting value of the color field buffer.
+"Starting Color Texture"			startingColorTextureSource : Texture2D		Start()				The texture used as a starting point for the color field buffer.
+"Starting Color"				startingColor : Color				Start()				- Color used as a starting point across the whole color field buffer.  This value is overridden if the Starting Texture is used instead.
+
+(Hidden)					colorRenderTextureSource: Texture2D		(Hidden)			This is the Color buffer output from the simulation.  This texture variable is public and available for reference by your custom scripts.  This texture should be treated as read-only.
+
+============================
+
+*** TexturePaint Grid Helper Functions ***
+
+============================
+
+ForceColorUpdate( )				Force a single frame update of the color buffer.  This can be used to update the texture without constant overhead.  If you want to use this and not the FPS value, make sure you set the FPS to zero.
+
+ChangeColorStrength( float )			The Sim Strength variable is used in multiple ways across FluidSim.  If you want to change Sim Strength at runtime, you will need to use this function to do so.
+
+ChangeColorDissipationStrength( float )		Changes the color dissipation strength in the simulation.
+ChangeColorDissipateTo( Color )			Changes the color that the simulation is dissipating towards when color dissipation is applied.
+ChangeColorDissipationBool( boolean )		Turns on/off color dissipation at runtime.
+
+SetColorSyncWithUpdate( boolean )		Turn on/off forcing the color buffer to update every frame Unity renders.
+SetColorUpdateFPS( float )			Changes the update rate of the color Influence Actors.
+
+ClearColorBuffer( Color )			The color buffer will be cleared to the color input of the function.
+ClearColorBufferToTexture( Texture2D )		The color buffer will be cleared to the texture input of the function.
+
+============================
+
+*** Common Questions ***
+
+============================
+
+- Why doesnt my Influence Actor show up? - Common areas to check are: Is the update FPS greater than zero?  Is the Color greater than zero?  Is the falloff too soft, making the influence appear subtle?  Is the Influence Actor close enough to the TexturePaint in all directions, including "up/down"?  Is the dissipation too strong?  Is the property turned on in the Influence Actor?
+- Why does my Influence Actor Texture repeat across the TexturePaint? - Influence Actor Textures need to be set to "clamp" in the texture import settings.
+- I turned on "clamp" for my Color texture, and it still looks wrong. - Influence Actor Color Textures use the alpha channel of the image to determine which part of the image to use.  If the alpha channel is missing or wrong, it will render across the entire SimGrid.
+- I turned on "clamp", the texture has an alpha, but it is stretching across the sim. - If your texture is trying to render at a smaller resolution than you created it at, it will try to use mips instead.  Mips can blend your pixels to values that are not optimal.  Make sure if you are using mips, to paint your texture with enough space near the edge so that it can "mip out" correctly.
+- Why is my Influence input taller or wider than the Gizmo sphere? - This can happen if you scale the TexturePaint Grid non-uniformly.  TexturePaint works best when everything has a uniform scale.  Its possible to use TexturePaint with non-uniform scaling, but results will vary and are unpredictable.
+- Why are there gaps in my Influence "trail"? - If you see gaps is your influence trail during simulation, try turning up the Color FPS or sync it with the Update().
+- Sometimes my InfluenceActor doesnt paint to my 3D object. - Make sure the influence actor is facing the correct direction. (Negative Y) If you turn on the "Show Size Gizmos" feature, you will see a wire sphere and a line pointing in the direction that the InfluenceActor will paint.  This direction must be facing towards the surface of the object.
+- When I paint on a complex 3D object why doesnt it work correctly? - Is "Paint on 3D objects" on?, Does your object have a mesh collider?, Is the Geo and UVs of your mesh collider the same as your visual geo?, Does your object have UVs to display the texture?, Is "UV Scale Bias" greater than zero?
+- TexturePaint works best when objects have uniform scale. (Equal scale in all directions.)  TexturePaint "can" work on non-uniformly scaled objects, but results are not predictable.
+- Why do some things look different on ios vs PC when painting on 3d objects? - Some of the settings act differently on iOS, this is currently under research with the intention to resolve it.
+- When I play my level, my objects are in different places or are gone? - Unity has a bug in its Static Batching system.  If TexturePaint has multiple objects set to "static" (in the top right of the Inspector) and Static Batching is turned on, this can cause objects to render incorrectly.  I have tried to find a solution to this, but it appears its in the Unity batching code.  Dynamic Batching appears to work correctly.
+- When I play my level in the editor, sometimes the feedback has a small stutter. - For the best editor performance make sure you deselect the sim object so Unity doesnt try to also render it in the geo preview window.
